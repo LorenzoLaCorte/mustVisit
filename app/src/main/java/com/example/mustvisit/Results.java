@@ -4,33 +4,25 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
-import com.example.mustvisit.GptChatApiService;
-import com.example.mustvisit.GptChatApiService.GptChatApiCallback;
-public class Results extends AppCompatActivity implements GptChatApiCallback {
+public class Results extends AppCompatActivity implements GptChatApiService.ChatGPTResponseListener {
+
+    private String query;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
 
-        // Example usage of the GptChatApiService
-        String query = "Hello, how are you?";
-        GptChatApiService.queryGptChatApi(query, this);
+        query = "Tell me the 5 best beaches near this coordinates (44.38559, 9.012631) in the range of 20 kilometers. I want as response a numbered list without further descriptions. I want all elements in the list to contain {name} - {coordinates (x,y)} - {short description}.";
+        GptChatApiService.queryChatGPT(query, this);
     }
 
     @Override
-    public void onResponse(String response) {
-        // Handle the response from the API
-        Log.d("GptChatApi", "Response: " + response);
+    public void onResponseReceived(String response) {
+        Log.d("ChatGPT", "Response: " + response);
+        TextView tv = findViewById(R.id.textView);
+        tv.setText(response);
     }
-
-    @Override
-    public void onFailure(Throwable throwable) {
-        // Print the stack trace of the exception
-        throwable.printStackTrace();
-
-        // Handle the failure case
-        Log.e("GptChatApi", "Request failed: " + throwable.getMessage());
-    }
-
 }
