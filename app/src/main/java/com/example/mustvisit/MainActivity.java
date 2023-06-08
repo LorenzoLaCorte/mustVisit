@@ -17,9 +17,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void showResults(View v) {
         // TODO: collect:
-        //  - the position (x,y) of the user
-        //  - the range (range) selected
-        //  - the categories ([categories]) selected
+        //  - the position (x,y) of the user as a Point
+        //  - the range (range) selected as a Double
+        //  - the categories ([categories]) selected as a List of Category
         //  and send these values to the other activity
         Intent i = new Intent(this, Results.class);
         startActivity(i);
