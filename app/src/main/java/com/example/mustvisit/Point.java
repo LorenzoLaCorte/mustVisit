@@ -1,6 +1,7 @@
 package com.example.mustvisit;
+import java.io.Serializable;
 
-public class Point {
+public class Point implements Serializable {
     protected double x;
     protected double y;
 

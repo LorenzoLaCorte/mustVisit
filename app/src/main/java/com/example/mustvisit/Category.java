@@ -1,5 +1,5 @@
 package com.example.mustvisit;
 
 public enum Category {
-    BEACHES,
+    BEACHES, HISTORICAL_PLACES, PARKS, FUN_ATTRACTIONS
 }

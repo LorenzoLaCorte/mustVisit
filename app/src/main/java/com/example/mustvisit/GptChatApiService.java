@@ -13,11 +13,11 @@ public class GptChatApiService {
     private static final String MODEL_NAME = "gpt-3.5-turbo";
     private static final String API_KEY = "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";
 
-    public static void queryChatGPT(String query, final ChatGPTResponseListener listener) {
-        new AsyncTask<String, Void, String>() {
+    public static void queryChatGPT(Category category, String query, final ChatGPTResponseListener listener) {
+        new AsyncTask<String, Void, TopPlaces>() {
 
             @Override
-            protected String doInBackground(String... strings) {
+            protected TopPlaces doInBackground(String... strings) {
                 String query = strings[0];
 
                 // Create an instance of OpenAiService
@@ -37,23 +37,30 @@ public class GptChatApiService {
                     // Get the response from the completion
                     String response = completionResult.getChoices().get(0).getMessage().getContent().trim();
 
-                    return response;
+                    // TODO: I want this to return (category, response)
+                    return new TopPlaces(category, query, response);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return "Error: " + e.getMessage();
+                    return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(String response) {
+            protected void onPostExecute(TopPlaces topPlaces) {
                 if (listener != null) {
-                    listener.onResponseReceived(response);
+                    if (topPlaces != null) {
+                        listener.onResponseReceived(topPlaces);
+                    } else {
+                        // Handle the error case
+                        listener.onError("Error occurred");
+                    }
                 }
             }
         }.execute(query);
     }
 
     public interface ChatGPTResponseListener {
-        void onResponseReceived(String response);
+        void onResponseReceived(TopPlaces topPlaces);
+        void onError(String errorMessage);
     }
 }

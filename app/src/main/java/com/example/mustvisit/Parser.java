@@ -2,8 +2,30 @@ package com.example.mustvisit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
+
+    public static Double[] strToCoordinates(String positionStr) {
+        // Define the pattern to match the numbers
+        Pattern pattern = Pattern.compile("-?\\d+(\\.\\d+)?");
+
+        // Find all matches in the input string
+        Matcher matcher = pattern.matcher(positionStr);
+
+        // Initialize an array to store the extracted numbers
+        Double[] numbers = new Double[2];
+
+        // Extract the first two numbers found (if any)
+        for (int i = 0; i < 2 && matcher.find(); i++) {
+            String numberStr = matcher.group();
+            numbers[i] = Double.parseDouble(numberStr);
+        }
+
+        return numbers;
+    }
+
     public List<Place> parseResult(String result, Category category, Point userLocation) {
         List<Place> places = new ArrayList<>();
 
@@ -18,14 +40,11 @@ public class Parser {
             else
                 line = line.substring(3);
 
-            String[] parts = line.split("-");
+            String[] parts = line.split(" - ");
             String name = parts[0].trim();
             String positionStr = parts[1].trim();
-
-            String[] coordinates = positionStr.split(",");
-            double x = Double.parseDouble(coordinates[0].trim());
-            double y = Double.parseDouble(coordinates[1].trim());
-            Point placeLocation = new Point(x, y);
+            Double[] coordinates = strToCoordinates(positionStr);
+            Point placeLocation = new Point(coordinates[0], coordinates[1]);
 
             String description = parts[2].trim();
 
