@@ -3,8 +3,11 @@ package com.example.mustvisit;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -15,11 +18,12 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     private final int numResults = 5;     // number of results to return for each query
 
     private Point userLocation;
-    List<Category> userCategories = new ArrayList<>();
+    private List<Category> userCategories = new ArrayList<>();
     private Double range;
 
-    // Structure that maps Category to List of Places
-    private TopPlaces[] topPlacesList;
+    // Structure that contains Category and List of Places
+    private List<TopPlaces> topPlacesList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,13 +41,7 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         for (Category category : userCategories) {
             queryGPT(category);
         }
-
-        // TODO: when every response is received, update the UI with a function
     }
-
-    // TODO: update UI function:
-    // waits for having all responses (same number as userCategories length)
-    // and then properly visualize them
 
     private void queryGPT(Category category) {
         String query = "Tell me the %s best %s near these coordinates (%s, %s) in the range of %s kilometers. " +
@@ -54,23 +52,28 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         Log.d("ChatGPT", "Query: " + query);
 
         // queryChatGPT should take in input but also return the type
-        // GptChatApiService.queryChatGPT(category, query, this);
-        onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
-                 "2. Bay of Silence - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
-                 "3. Sestri Levante Beach - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
-                 "4. Lavagna Beach - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
-                 "5. Moneglia Beach - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
+        GptChatApiService.queryChatGPT(category, query, this);
+        // onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
+        //          "2. Bay of Silence - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
+        //          "3. Sestri Levante Beach - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
+        //          "4. Lavagna Beach - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
+        //          "5. Moneglia Beach - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
     }
 
     @Override
     public void onResponseReceived(TopPlaces topPlaces) {
         Log.d("ChatGPT", "Response: " + topPlaces.response);
         parseQueryResult(topPlaces);
-        // TODO: add topPlaces to topPlacesList
+        topPlacesList.add(topPlaces);
+
+        if(topPlacesList.size() == userCategories.size()){
+            renderUI();
+        }
     }
 
     @Override
     public void onError(String errorMessage) {
+        // TODO: if there's a timeout, I want GPT to retry 3 times
         Log.d("ChatGPT", "Error: " + errorMessage);
     }
 
@@ -78,15 +81,54 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         Parser parser = new Parser();
         List<Place> places = parser.parseResult(topPlaces.response, topPlaces.category, userLocation);
         topPlaces.setTopPlaces(places);
-
-        // TODO: move the logic to a visualization function and make a scroll view
-        TextView tv = findViewById(R.id.textView);
-        String viewText = "";
-        String tmp = "";
-        for (Place place : topPlaces.topPlaces) {
-            tmp = "Name: " + place.name + "\n" + "Position: (" + place.position.x + ", " + place.position.y + ")\n" + "Description: " + place.description + "\n" + "Distance: " + place.distance + " km\n" + "-----\n";
-            viewText += tmp;
-        }
-        tv.setText(viewText);
     }
+
+    private void renderUI() {
+        LinearLayout linearLayout = findViewById(R.id.resultContainer);
+        linearLayout.removeAllViews(); // Clear the existing views
+
+        for (TopPlaces topPlaces : topPlacesList) {
+
+            // Add category as a TextView with custom formatting
+            TextView categoryTextView = new TextView(this);
+            LinearLayout.LayoutParams categoryLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            categoryTextView.setLayoutParams(categoryLayoutParams);
+            categoryTextView.setTextAppearance(this, android.R.style.TextAppearance_Large);
+            categoryTextView.setText(topPlaces.category.name().replaceAll("_", " "));
+            linearLayout.addView(categoryTextView);
+
+            // Add a separator (a single newline) between categories
+            View categorySeparatorView = new View(this);
+            LinearLayout.LayoutParams categorySeparatorLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT, 4);
+            categorySeparatorView.setLayoutParams(categorySeparatorLayoutParams);
+            categorySeparatorView.setBackgroundColor(Color.GRAY);
+            linearLayout.addView(categorySeparatorView);
+
+            for (Place place : topPlaces.topPlaces) {
+                // Add the place name in bold
+                TextView placeNameTextView = new TextView(this);
+                LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                placeNameTextView.setLayoutParams(placeNameLayoutParams);
+                placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+                placeNameTextView.setText(place.name);
+                linearLayout.addView(placeNameTextView);
+
+                // Add other place details
+                TextView placeDetailsTextView = new TextView(this);
+                LinearLayout.LayoutParams placeDetailsLayoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
+                placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
+                placeDetailsTextView.setText("\uD83D\uDCCC " + place.distance + " km\n"
+                                + "ℹ️ " + place.description + "\n"
+                        );
+                linearLayout.addView(placeDetailsTextView);
+            }
+
+        }
+    }
+
 }
