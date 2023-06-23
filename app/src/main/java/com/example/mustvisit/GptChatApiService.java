@@ -13,12 +13,13 @@ public class GptChatApiService {
     private static final String MODEL_NAME = "gpt-3.5-turbo";
     private static final String API_KEY = "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";
 
-    public static void queryChatGPT(Category category, String query, final ChatGPTResponseListener listener) {
+    public static void queryChatGPT(TopPlaces topPlaces, final ChatGPTResponseListener listener) {
         new AsyncTask<String, Void, TopPlaces>() {
 
             @Override
-            protected TopPlaces doInBackground(String... strings) {
-                String query = strings[0];
+            protected TopPlaces doInBackground(String... input) {
+                String query = input[0];
+                Category category = topPlaces.category;
 
                 // Create an instance of OpenAiService
                 OpenAiService openAiService = new OpenAiService(API_KEY);
@@ -37,30 +38,29 @@ public class GptChatApiService {
                     // Get the response from the completion
                     String response = completionResult.getChoices().get(0).getMessage().getContent().trim();
 
-                    // TODO: I want this to return (category, response)
                     return new TopPlaces(category, query, response);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return null;
+                    return new TopPlaces(category, query, null);
                 }
             }
 
             @Override
             protected void onPostExecute(TopPlaces topPlaces) {
                 if (listener != null) {
-                    if (topPlaces != null) {
+                    if (topPlaces.response != null) {
                         listener.onResponseReceived(topPlaces);
                     } else {
                         // Handle the error case
-                        listener.onError("Error occurred");
+                        listener.onError(topPlaces);
                     }
                 }
             }
-        }.execute(query);
+        }.execute(topPlaces.query);
     }
 
     public interface ChatGPTResponseListener {
         void onResponseReceived(TopPlaces topPlaces);
-        void onError(String errorMessage);
+        void onError(TopPlaces topPlaces);
     }
 }

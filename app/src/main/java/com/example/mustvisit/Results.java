@@ -14,9 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Results extends AppCompatActivity implements GptChatApiService.ChatGPTResponseListener {
-
+    // TODO: optimize the application: use multithreading for each query to GPT
     private final int numResults = 5;     // number of results to return for each query
-
     private Point userLocation;
     private List<Category> userCategories = new ArrayList<>();
     private Double range;
@@ -51,13 +50,15 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         query = String.format(query, numResults, category.name().toLowerCase().replaceAll("_", " "), userLocation.x, userLocation.y, range);
         Log.d("ChatGPT", "Query: " + query);
 
-        // queryChatGPT should take in input but also return the type
-        GptChatApiService.queryChatGPT(category, query, this);
+        // TODO: insert threads here
+        TopPlaces initTopPlaces = new TopPlaces(category, query);
+
+        GptChatApiService.queryChatGPT(initTopPlaces, this);
         // onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
-        //          "2. Bay of Silence - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
-        //          "3. Sestri Levante Beach - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
-        //          "4. Lavagna Beach - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
-        //          "5. Moneglia Beach - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
+        //           "2. Bay of Silence - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
+        //           "3. Sestri Levante Beach - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
+        //           "4. Lavagna Beach - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
+        //           "5. Moneglia Beach - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
     }
 
     @Override
@@ -71,16 +72,46 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         }
     }
 
-    @Override
-    public void onError(String errorMessage) {
-        // TODO: if there's a timeout, I want GPT to retry 3 times
-        Log.d("ChatGPT", "Error: " + errorMessage);
+    private void retryQuery(TopPlaces topPlaces){
+        if(topPlaces.tryIncrementingRetries()){
+            // TODO: insert threads here
+            // TODO: if Rate limit reached, stop and render the UI
+            Log.d("ChatGPT", "Retrying query, try number " +  topPlaces.retries);
+            GptChatApiService.queryChatGPT(topPlaces, this);
+        }
+        else {
+            Log.d("ChatGPT", "Limit of Retries Reached");
+            topPlaces.setTopPlaces(null);
+            if(topPlacesList.size() == userCategories.size()){
+                renderUI();
+            }
+        }
     }
 
+    @Override
+    public void onError(TopPlaces topPlaces) {
+        Log.d("ChatGPT", "Timeout Occurred, retrying..");
+        retryQuery(topPlaces);
+    }
+
+    private List<Place> filterResult(List<Place> places){
+        List<Place> filteredPlaces = new ArrayList<>();
+        for (Place place : places){
+            if(place.distance <= range) filteredPlaces.add(place);
+        }
+        return filteredPlaces;
+    }
     private void parseQueryResult(TopPlaces topPlaces) {
         Parser parser = new Parser();
-        List<Place> places = parser.parseResult(topPlaces.response, topPlaces.category, userLocation);
-        topPlaces.setTopPlaces(places);
+        List<Place> rawPlaces = parser.parseResult(topPlaces.response, topPlaces.category, userLocation);
+        List<Place> places = filterResult(rawPlaces);
+        if(places.size() == 0){
+            Log.d("ChatGPT", "No Results, retrying..");
+            retryQuery(topPlaces);
+        }
+        else {
+            topPlaces.setTopPlaces(places);
+        }
     }
 
     private void renderUI() {
@@ -106,6 +137,16 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
             categorySeparatorView.setBackgroundColor(Color.GRAY);
             linearLayout.addView(categorySeparatorView);
 
+            if(topPlaces.topPlaces == null){
+                TextView placeNameTextView = new TextView(this);
+                LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                placeNameTextView.setLayoutParams(placeNameLayoutParams);
+                placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+                placeNameTextView.setText("No Results Found.");
+                linearLayout.addView(placeNameTextView);
+                continue;
+            }
             for (Place place : topPlaces.topPlaces) {
                 // Add the place name in bold
                 TextView placeNameTextView = new TextView(this);
@@ -122,9 +163,8 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
                         LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                 placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
                 placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
-                placeDetailsTextView.setText("\uD83D\uDCCC " + place.distance + " km\n"
-                                + "ℹ️ " + place.description + "\n"
-                        );
+                placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
+                                + "ℹ️ " + place.description + "\n");
                 linearLayout.addView(placeDetailsTextView);
             }
 

@@ -14,6 +14,7 @@ import android.location.LocationManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import com.google.android.material.slider.RangeSlider;
 
@@ -22,14 +23,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     private RangeSlider rangeSlider;
+    private CheckBox[] checkBoxes;
+
+    private double range;
+    private Point userLocation;
+    private List<Category> selectedCategories;
+    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        button = findViewById(R.id.buttonLocateAndSearch);
+        button.setEnabled(false);
+        button.setText(R.string.LocationLoading);
+
         rangeSlider = findViewById(R.id.rangeSlider);
+
+        checkBoxes = new CheckBox[]{
+                findViewById(R.id.checkBoxBeaches),
+                findViewById(R.id.checkBoxFunAttractions),
+                findViewById(R.id.checkBoxParks),
+                findViewById(R.id.checkBoxHistoricalPlaces)
+        };
+        getUserLocation(new LocationCallback() {
+            @Override
+            public void onLocationReceived(Point location) {
+                userLocation = location;
+                button.setEnabled(true);
+                button.setText(R.string.Search);
+            }
+        });
     }
 
     private void getUserLocation(final LocationCallback locationCallback) {
@@ -55,36 +80,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showResults(View v) {
-        getUserLocation(new LocationCallback() {
-            @Override
-            public void onLocationReceived(Point userLocation) {
-                double range = rangeSlider.getValues().get(0);
-                // Retrieve the selected categories
-                List<Category> selectedCategories = new ArrayList<>();
-                CheckBox[] checkBoxes = {
-                        findViewById(R.id.checkBoxBeaches),
-                        findViewById(R.id.checkBoxFunAttractions),
-                        findViewById(R.id.checkBoxParks),
-                        findViewById(R.id.checkBoxHistoricalPlaces)
-                };
+        range = rangeSlider.getValues().get(0);
 
-                for (CheckBox checkBox : checkBoxes) {
-                    if (checkBox.isChecked()) {
-                        String categoryText = checkBox.getText().toString().replaceAll("\\s+", "_");
-                        Category category = Category.valueOf(categoryText.toUpperCase());
-                        selectedCategories.add(category);
-                    }
-                }
-
-                Intent intent = new Intent(MainActivity.this, Results.class);
-                intent.putExtra("userLocation", userLocation);
-                intent.putExtra("range", range);
-                intent.putExtra("categories", (Serializable) selectedCategories);
-
-                // Start the other activity
-                startActivity(intent);
+        selectedCategories = new ArrayList<>();
+        for (CheckBox checkBox : checkBoxes) {
+            if (checkBox.isChecked()) {
+                String categoryText = checkBox.getText().toString().replaceAll("\\s+", "_");
+                Category category = Category.valueOf(categoryText.toUpperCase());
+                selectedCategories.add(category);
             }
-        });
+        }
+
+        Intent intent = new Intent(MainActivity.this, Results.class);
+        intent.putExtra("userLocation", userLocation);
+        intent.putExtra("range", range);
+        intent.putExtra("categories", (Serializable) selectedCategories);
+
+        startActivity(intent);
     }
 
     private interface LocationCallback {

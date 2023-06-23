@@ -8,7 +8,12 @@ public class TopPlaces {
     protected String query;
     protected String response;
     protected List<Place> topPlaces = new ArrayList<>();
+    protected int retries = 0;
 
+    public TopPlaces(Category category, String query) {
+        this.category = category;
+        this.query = query;
+    }
     public TopPlaces(Category category, String query, String response) {
         this.category = category;
         this.query = query;
@@ -19,4 +24,8 @@ public class TopPlaces {
         this.topPlaces = topPlaces;
     }
 
+    public Boolean tryIncrementingRetries(){
+        this.retries += 1;
+        return (this.retries < 3);
+    }
 }
