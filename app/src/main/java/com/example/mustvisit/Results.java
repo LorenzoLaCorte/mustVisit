@@ -1,5 +1,7 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -164,14 +166,28 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
                 placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
                 placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
                 placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
-                                + "ℹ️ " + place.description +  "\n");
+                                + "ℹ️ " + place.description + "\n"+ place.position.x+ ","+ place.position.y+"\n");
                 linearLayout.addView(placeDetailsTextView);
             }
             categoryTextView.setOnClickListener(new TextView.OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
+                    String Value;
+                    CharSequence text = categoryTextView.getText();
+                    if ("PARKS".equals(text)) {
+                        Value="PARKS";
+                    } else if ("HISTORICAL PLACES".equals(text)) {
+                        Value="HISTORICAL_PLACES";
+                    } else if ("FUN ATTRACTIONS".equals(text)) {
+                        Value="FUN_ATTRACTIONS";
+                    } else {
+                        Value="BEACHES";
+                    }
                     Intent myIntent = new Intent(Results.this, MapsActivity.class);
+                    myIntent.putExtra("category",Value);
+                    Utility.getInstance().setList((ArrayList) topPlacesList);
+                    Log.d(TAG, "Value:"+Value);
                     startActivity(myIntent);
                 }
             });

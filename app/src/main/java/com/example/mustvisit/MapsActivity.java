@@ -1,8 +1,12 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.fragment.app.FragmentActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -11,6 +15,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.example.mustvisit.databinding.ActivityMapsBinding;
+
+import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -42,10 +48,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        Intent intent = getIntent();
+        String Category=intent.getStringExtra("category");
 
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        List<TopPlaces> prova =Utility.getInstance().getList();
+        for (TopPlaces p: prova){
+            Log.d(TAG, "Category: "+p.category+ "----- Intent: "+Category);
+            Log.d(TAG, "Risultato IF: "+p.category.equals(Category));
+            if (p.category.toString().equals(Category)) {
+                for (Place q : p.topPlaces) Log.d(TAG, "Name: "+q.name+" coord: " + q.position.x+","+q.position.y);
+            }
+
+        }
+
     }
 }
