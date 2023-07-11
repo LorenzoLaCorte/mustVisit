@@ -164,10 +164,17 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
                 placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
                 placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
                 placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
-                                + "ℹ️ " + place.description + "\n");
+                                + "ℹ️ " + place.description +  "\n");
                 linearLayout.addView(placeDetailsTextView);
             }
+            categoryTextView.setOnClickListener(new TextView.OnClickListener() {
 
+                @Override
+                public void onClick(View view) {
+                    Intent myIntent = new Intent(Results.this, MapsActivity.class);
+                    startActivity(myIntent);
+                }
+            });
         }
     }
 

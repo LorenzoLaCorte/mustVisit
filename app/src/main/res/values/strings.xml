@@ -9,4 +9,5 @@
     <string name="Search">🔎 Search</string>
     <string name="select_a_range_kilometers">Select the Maximum Distance from your Position</string>
     <string name="loading">𝐍𝐨𝐰 𝐥𝐨𝐚𝐝𝐢𝐧𝐠...</string>
+    <string name="title_activity_maps">MapsActivity</string>
 </resources>
