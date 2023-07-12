@@ -58,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         List<TopPlaces> prova =Utility.getInstance().getList();
         for (TopPlaces p: prova){
             Log.d(TAG, "Category: "+p.category+ "----- Intent: "+Category);
-            Log.d(TAG, "Risultato IF: "+p.category.equals(Category));
+            Log.d(TAG, "Risultato IF: "+p.category.toString().equals(Category));
             if (p.category.toString().equals(Category)) {
                 for (Place q : p.topPlaces) Log.d(TAG, "Name: "+q.name+" coord: " + q.position.x+","+q.position.y);
             }
