@@ -22,7 +22,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     private ActivityMapsBinding binding;
-
+    private LatLng cord = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +34,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
     /**
@@ -50,20 +52,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         Intent intent = getIntent();
         String Category=intent.getStringExtra("category");
+        List<TopPlaces> ListPlaces =Utility.getInstance().getList();
+        for (TopPlaces places: ListPlaces){
+            Log.d(TAG, "Category: "+places.category+ "----- Intent: "+Category);
+            Log.d(TAG, "Risultato IF: "+places.category.toString().equals(Category));
+            if (places.category.toString().equals(Category)) {
+                for (Place p : places.topPlaces) {
+                    Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
+                    cord=new LatLng( p.position.x, p.position.y );
+                    mMap.addMarker(new MarkerOptions().position(cord).title(p.name));
+                }
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        List<TopPlaces> prova =Utility.getInstance().getList();
-        for (TopPlaces p: prova){
-            Log.d(TAG, "Category: "+p.category+ "----- Intent: "+Category);
-            Log.d(TAG, "Risultato IF: "+p.category.toString().equals(Category));
-            if (p.category.toString().equals(Category)) {
-                for (Place q : p.topPlaces) Log.d(TAG, "Name: "+q.name+" coord: " + q.position.x+","+q.position.y);
             }
 
         }
+        moveToCurrentLocation(cord);
+    }
+    private void moveToCurrentLocation(LatLng currentLocation)
+    {
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation,15));
+        // Zoom in, animating the camera.
+        mMap.animateCamera(CameraUpdateFactory.zoomIn());
+        // Zoom out to zoom level 10, animating with a duration of 2 seconds.
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
 
     }
 }
