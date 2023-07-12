@@ -52,32 +52,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (TopPlaces places: ListPlaces){
             Log.d(TAG, "Category: "+places.category+ "----- Intent: "+Category);
             Log.d(TAG, "Risultato IF: "+places.category.toString().equals(Category));
-            if (places.category.toString().equals("HISTORICAL_PLACES")) {
-                for (Place p : places.topPlaces) {
-                    Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
-                    cord=new LatLng( p.position.x, p.position.y );
-                    mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                }
-
-            } else if (places.category.toString().equals("FUN_ATTRACTIONS")) {
-                for (Place p : places.topPlaces) {
-                    Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
-                    cord=new LatLng( p.position.x, p.position.y );
-                    mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                }
-            } else if (places.category.toString().equals("PARKS")) {
-                for (Place p : places.topPlaces) {
-                    Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
-                    cord=new LatLng( p.position.x, p.position.y );
-                    mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
-                }
-            }else {
-                for (Place p : places.topPlaces) {
-                    Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
-                    cord=new LatLng( p.position.x, p.position.y );
-                    mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                }
-            }
+            ChooseMarker(places);
 
         }
         moveToCurrentLocation(cord);
@@ -91,6 +66,48 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
 
 
+    }
+    private void ChooseMarker( TopPlaces Places){
+
+        if (Places.category.toString().equals("HISTORICAL_PLACES")) {
+            AddHistoricalPlaces(Places);
+        } else if (Places.category.toString().equals("FUN_ATTRACTIONS")) {
+           AddFunAttractions(Places);
+        } else if (Places.category.toString().equals("PARKS")) {
+           AddParks(Places);
+        }else {
+           AddBeaches(Places);
+        }
+
+    }
+    public void AddHistoricalPlaces(TopPlaces Places){
+        for (Place p : Places.topPlaces) {
+            Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
+            cord=new LatLng( p.position.x, p.position.y );
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+        }
+    }
+    public void AddFunAttractions(TopPlaces Places) {
+        for (Place p : Places.topPlaces) {
+            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+        }
+    }
+    public void AddParks(TopPlaces Places) {
+        for (Place p : Places.topPlaces) {
+            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+        }
+    }
+
+    public void AddBeaches(TopPlaces Places) {
+        for (Place p : Places.topPlaces) {
+            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        }
     }
 }
 
