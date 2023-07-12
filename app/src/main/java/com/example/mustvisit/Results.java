@@ -8,7 +8,9 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -168,30 +170,29 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
                 placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
                                 + "ℹ️ " + place.description + "\n"+ place.position.x+ ","+ place.position.y+"\n");
                 linearLayout.addView(placeDetailsTextView);
-            }
-            categoryTextView.setOnClickListener(new TextView.OnClickListener() {
 
-                @Override
-                public void onClick(View view) {
-                    String Value;
-                    CharSequence text = categoryTextView.getText();
-                    if ("PARKS".equals(text)) {
-                        Value="PARKS";
-                    } else if ("HISTORICAL PLACES".equals(text)) {
-                        Value="HISTORICAL_PLACES";
-                    } else if ("FUN ATTRACTIONS".equals(text)) {
-                        Value="FUN_ATTRACTIONS";
-                    } else {
-                        Value="BEACHES";
-                    }
-                    Intent myIntent = new Intent(Results.this, MapsActivity.class);
-                    myIntent.putExtra("category",Value);
-                    Utility.getInstance().setList((ArrayList) topPlacesList);
-                    Log.d(TAG, "Value:"+Value);
-                    startActivity(myIntent);
-                }
-            });
+
+            }
         }
+        //Add button
+        Button button = new Button(this);
+        LinearLayout.LayoutParams buttonLayoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        buttonLayoutParams.gravity = Gravity.CENTER; // Set gravity to center
+        button.setLayoutParams(buttonLayoutParams);
+        button.setText("Open Map");
+
+// Add the button to the LinearLayout
+        linearLayout.addView(button);
+        button.setOnClickListener(new TextView.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Intent myIntent = new Intent(Results.this, MapsActivity.class);
+                Utility.getInstance().setList((ArrayList) topPlacesList);
+                startActivity(myIntent);
+            }
+        });
     }
 
 }
