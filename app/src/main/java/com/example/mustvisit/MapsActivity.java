@@ -157,8 +157,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
                     relativeLayout[0].removeView(button);
                     Log.d(TAG, "tosend: "+ SendToMaps.get(0));
-                    Log.d(TAG, "tosend: "+ SendToMaps.get(1));
-                    Log.d(TAG, "tosend: "+ SendToMaps.get(2));
+
             }
         });
 
