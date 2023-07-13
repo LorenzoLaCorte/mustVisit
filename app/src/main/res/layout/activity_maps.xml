@@ -17,6 +17,7 @@
         android:id="@+id/ButtonSendMaps"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="openGM"
         android:text="Go to Google Maps" />
 
 

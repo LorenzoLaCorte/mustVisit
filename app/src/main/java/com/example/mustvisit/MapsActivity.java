@@ -4,10 +4,13 @@ import static android.app.PendingIntent.getActivity;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -30,7 +33,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,GoogleMap.OnMapClickListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private GoogleMap mMap;
     private LatLng cord = null;
@@ -72,7 +75,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         moveToCurrentLocation(cord);
 
         mMap.setOnMarkerClickListener(this);
-        mMap.setOnMapClickListener(this);
     }
     private void moveToCurrentLocation(LatLng currentLocation)
     {
@@ -155,19 +157,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
                     relativeLayout[0].removeView(button);
                     Log.d(TAG, "tosend: "+ SendToMaps.get(0));
-
+                    Log.d(TAG, "tosend: "+ SendToMaps.get(1));
+                    Log.d(TAG, "tosend: "+ SendToMaps.get(2));
             }
         });
 
         return false;
     }
 
-    @Override
-    public void onMapClick(@NonNull LatLng latLng) {
-        RelativeLayout relativeLayout = findViewById(R.id.layout);
 
-        Log.d(TAG, "CIAOOOO");
 
+    public void openGM(View view){
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
+        startActivity(browserIntent);
     }
 }
 
