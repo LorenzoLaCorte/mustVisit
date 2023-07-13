@@ -1,11 +1,20 @@
 package com.example.mustvisit;
 
+import static android.app.PendingIntent.getActivity;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.mustvisit.R;
@@ -15,14 +24,19 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener,GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     private LatLng cord = null;
+    private String titleMarker= null;
+    private ArrayList<String> SendToMaps = new ArrayList<String>(); // Create an ArrayList object
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +70,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         }
         moveToCurrentLocation(cord);
+
+        mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
     private void moveToCurrentLocation(LatLng currentLocation)
     {
@@ -108,6 +125,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             cord = new LatLng(p.position.x, p.position.y);
             mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
         }
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
+        Button button = new Button(this);
+        button.setText("Add Stop");
+
+        // Define layout parameters for the button
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        // Set the position of the button using layout rules
+        layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+        button.setId(View.generateViewId());
+        // Add the button to the RelativeLayout
+        relativeLayout[0].addView(button, layoutParams);
+        titleMarker=marker.getTitle().toString();
+        button.setOnClickListener(new TextView.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                SendToMaps.add(titleMarker);
+                Toast.makeText(getApplicationContext(),"Stop added to the Trip!",Toast.LENGTH_SHORT).show();
+                relativeLayout[0] = (RelativeLayout) button.getParent();
+                if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
+                    relativeLayout[0].removeView(button);
+                    Log.d(TAG, "tosend: "+ SendToMaps.get(0));
+
+            }
+        });
+
+        return false;
+    }
+
+    @Override
+    public void onMapClick(@NonNull LatLng latLng) {
+        RelativeLayout relativeLayout = findViewById(R.id.layout);
+
+        Log.d(TAG, "CIAOOOO");
+
     }
 }
 
