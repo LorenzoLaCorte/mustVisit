@@ -181,6 +181,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+cordX+","+cordY+""+valueToSendMap));
                         //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
+        SendToMaps.clear();
         startActivity(browserIntent);
     }
 }
