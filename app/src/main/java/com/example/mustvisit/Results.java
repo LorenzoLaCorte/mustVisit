@@ -190,6 +190,7 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
             public void onClick(View view) {
                 Intent myIntent = new Intent(Results.this, MapsActivity.class);
                 Utility.getInstance().setList((ArrayList) topPlacesList);
+                myIntent.putExtra("userLocation", userLocation);
                 startActivity(myIntent);
             }
         });

@@ -39,7 +39,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng cord = null;
     private String titleMarker= null;
     private ArrayList<String> SendToMaps = new ArrayList<String>(); // Create an ArrayList object
-
+    private Point userLocation;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,7 +156,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 relativeLayout[0] = (RelativeLayout) button.getParent();
                 if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
                     relativeLayout[0].removeView(button);
-                    Log.d(TAG, "tosend: "+ SendToMaps.get(0));
 
             }
         });
@@ -167,7 +166,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void openGM(View view){
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
+        //get User Location
+        Intent intent = getIntent();
+        userLocation = (Point) intent.getSerializableExtra("userLocation");
+        String cordX= new Double(userLocation.x).toString();
+        String cordY= new Double(userLocation.y).toString();
+        String valueToSendMap="";
+        for (String s: SendToMaps){
+            s=s.replace(" ","+");
+            Log.d(TAG, "Valore Send Maps: "+s);
+            valueToSendMap+="/"+s;
+            Log.d(TAG, "Value: "+valueToSendMap);
+
+        }
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+cordX+","+cordY+""+valueToSendMap));
+                        //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
         startActivity(browserIntent);
     }
 }
