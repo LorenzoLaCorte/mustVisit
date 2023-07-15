@@ -1,5 +1,7 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -7,20 +9,25 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import com.google.android.material.slider.RangeSlider;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     private RangeSlider rangeSlider;
@@ -30,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private Point userLocation;
     private List<Category> selectedCategories;
     private Button button;
-
+    List<Address> addresses= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
                 button.setText(R.string.Search);
             }
         });
+
+
+
+
     }
 
     private void getUserLocation(final LocationCallback locationCallback) {

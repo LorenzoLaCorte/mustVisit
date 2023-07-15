@@ -4,6 +4,8 @@ import static android.app.PendingIntent.getActivity;
 import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -30,8 +32,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
@@ -40,6 +44,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String titleMarker= null;
     private ArrayList<String> SendToMaps = new ArrayList<String>(); // Create an ArrayList object
     private Point userLocation;
+    List<Address> addresses= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,31 +106,83 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void AddHistoricalPlaces(TopPlaces Places){
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Name: "+p.name+" coord: " + p.position.x+","+p.position.y);
-            cord=new LatLng( p.position.x, p.position.y );
-            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            Address address;
+
+            if (p.name.length() != 0) {
+                try {
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    address = addresses.get(0);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                cord = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                addresses.clear();
+            }
         }
     }
     public void AddFunAttractions(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
-            cord = new LatLng(p.position.x, p.position.y);
-            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+            Log.d(TAG, "attraction: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            Address address;
+            if (p.name.length() != 0) {
+                try {
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    address = addresses.get(0);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                cord = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
+                addresses.clear();
+
+            }
         }
     }
     public void AddParks(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
-            cord = new LatLng(p.position.x, p.position.y);
-            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+            Log.d(TAG, "Park: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            Address address;
+            if (p.name.length() != 0) {
+                try {
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    address = addresses.get(0);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                cord = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
+                addresses.clear();
+
+            }
         }
     }
 
     public void AddBeaches(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
-            cord = new LatLng(p.position.x, p.position.y);
-            mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+            Log.d(TAG, "Beaches: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Geocoder geo = new Geocoder(this, Locale.getDefault());
+            Address address;
+            if (p.name.length() != 0) {
+                try {
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    address = addresses.get(0);
+
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                cord = new LatLng(address.getLatitude(), address.getLongitude());
+                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                addresses.clear();
+
+            }
         }
     }
 
@@ -143,7 +200,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // Set the position of the button using layout rules
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-        button.setId(View.generateViewId());
         // Add the button to the RelativeLayout
         relativeLayout[0].addView(button, layoutParams);
         titleMarker=marker.getTitle().toString();
@@ -184,5 +240,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SendToMaps.clear();
         startActivity(browserIntent);
     }
+
 }
 
