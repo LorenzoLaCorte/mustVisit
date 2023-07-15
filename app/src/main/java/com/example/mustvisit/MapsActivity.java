@@ -44,6 +44,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private String titleMarker= null;
     private ArrayList<String> SendToMaps = new ArrayList<String>(); // Create an ArrayList object
     private Point userLocation;
+    private Double cordX;
+    private Double cordY;
     List<Address> addresses= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +79,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             ChooseMarker(places);
 
         }
+        userLocation = (Point) intent.getSerializableExtra("userLocation");
+        cordX= userLocation.x;
+        cordY= userLocation.y;
+        cord=new LatLng(cordX,cordY);
         moveToCurrentLocation(cord);
 
         mMap.setOnMarkerClickListener(this);
@@ -104,7 +110,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
-    public void AddHistoricalPlaces(TopPlaces Places){
+    public void AddHistoricalPlaces(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
             Geocoder geo = new Geocoder(this, Locale.getDefault());
@@ -113,17 +119,20 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (p.name.length() != 0) {
                 try {
                     List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
-                    address = addresses.get(0);
 
+                    if (addresses != null && addresses.size() > 0) {
+                        address = addresses.get(0);
+                        cord = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        addresses.clear();
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                cord = new LatLng(address.getLatitude(), address.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                addresses.clear();
             }
         }
     }
+
     public void AddFunAttractions(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "attraction: " + p.name + " coord: " + p.position.x + "," + p.position.y);
@@ -132,15 +141,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (p.name.length() != 0) {
                 try {
                     List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
-                    address = addresses.get(0);
 
+                    if (addresses != null && addresses.size() > 0) {
+                        address = addresses.get(0);
+                        cord = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                        addresses.clear();
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                cord = new LatLng(address.getLatitude(), address.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW)));
-                addresses.clear();
-
             }
         }
     }
@@ -152,14 +162,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (p.name.length() != 0) {
                 try {
                     List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
-                    address = addresses.get(0);
 
+                    if (addresses != null && addresses.size() > 0) {
+                        address = addresses.get(0);
+                        cord = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                        addresses.clear();
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                cord = new LatLng(address.getLatitude(), address.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)));
-                addresses.clear();
 
             }
         }
@@ -173,14 +185,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             if (p.name.length() != 0) {
                 try {
                     List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
-                    address = addresses.get(0);
 
+                    if (addresses != null && addresses.size() > 0) {
+                        address = addresses.get(0);
+                        cord = new LatLng(address.getLatitude(), address.getLongitude());
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                        addresses.clear();
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                cord = new LatLng(address.getLatitude(), address.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                addresses.clear();
 
             }
         }
@@ -222,12 +236,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void openGM(View view){
-        //get User Location
-        Intent intent = getIntent();
-        userLocation = (Point) intent.getSerializableExtra("userLocation");
-        String cordX= new Double(userLocation.x).toString();
-        String cordY= new Double(userLocation.y).toString();
+
         String valueToSendMap="";
+        String x=cordX.toString();
+        String y= cordY.toString();
         for (String s: SendToMaps){
             s=s.replace(" ","+");
             Log.d(TAG, "Valore Send Maps: "+s);
@@ -235,7 +247,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d(TAG, "Value: "+valueToSendMap);
 
         }
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+cordX+","+cordY+""+valueToSendMap));
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+x+","+y+""+valueToSendMap));
                         //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
         SendToMaps.clear();
         startActivity(browserIntent);
