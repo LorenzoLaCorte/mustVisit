@@ -1,5 +1,9 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
+
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -42,15 +46,21 @@ public class Parser {
 
             String[] parts = line.split(" - ");
             String name = parts[0].trim();
-            String positionStr = parts[1].trim();
+            Log.d(TAG, "name: " +parts[0].trim());
+
+            String city=parts[1].trim();
+            Log.d(TAG, "City: " +parts[1].trim());
+
+            String positionStr = parts[2].trim();
+            Log.d(TAG, "PositionSTR: " +parts[2].trim());
             Double[] coordinates = strToCoordinates(positionStr);
             Point placeLocation = new Point(coordinates[0], coordinates[1]);
 
-            String description = parts[2].trim();
+            String description = parts[3].trim();
 
             double distance = userLocation.computeDistance(placeLocation);
 
-            Place place = new Place(category, name, placeLocation, description, distance);
+            Place place = new Place(category, name,city, placeLocation, description, distance);
             places.add(place);
 
             i++;

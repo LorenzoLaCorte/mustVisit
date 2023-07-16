@@ -9,20 +9,12 @@ import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.example.mustvisit.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -112,13 +104,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void AddHistoricalPlaces(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Name: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             Address address;
 
             if (p.name.length() != 0) {
                 try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
 
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
@@ -135,12 +127,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void AddFunAttractions(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "attraction: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             Address address;
             if (p.name.length() != 0) {
                 try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
 
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
@@ -156,12 +148,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
     public void AddParks(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Park: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             Address address;
             if (p.name.length() != 0) {
                 try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
 
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
@@ -179,12 +171,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void AddBeaches(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
-            Log.d(TAG, "Beaches: " + p.name + " coord: " + p.position.x + "," + p.position.y);
+            Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
             Geocoder geo = new Geocoder(this, Locale.getDefault());
             Address address;
             if (p.name.length() != 0) {
                 try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString(), 1);
+                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
 
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
@@ -236,7 +228,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
     public void openGM(View view){
-
         String valueToSendMap="";
         String x=cordX.toString();
         String y= cordY.toString();

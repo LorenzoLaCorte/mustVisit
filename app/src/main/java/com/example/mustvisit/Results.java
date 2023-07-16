@@ -49,7 +49,7 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     private void queryGPT(Category category) {
         String query = "Tell me the %s best %s near these coordinates (%s, %s) in the range of %s kilometers. " +
                 "I want as response a numbered list without further descriptions. " +
-                "I want all elements in the list to contain {name} - {coordinates (x,y)} - {short description}.";
+                "I want all elements in the list to contain {name} - {city} - {coordinates (x,y)} - {short description}.";
 
         query = String.format(query, numResults, category.name().toLowerCase().replaceAll("_", " "), userLocation.x, userLocation.y, range);
         Log.d("ChatGPT", "Query: " + query);
