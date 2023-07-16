@@ -115,7 +115,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
                         cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
                         addresses.clear();
                     }
                 } catch (IOException e) {
@@ -137,7 +137,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
                         cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
                         addresses.clear();
                     }
                 } catch (IOException e) {
@@ -158,7 +158,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
                         cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                         addresses.clear();
                     }
                 } catch (IOException e) {
@@ -181,7 +181,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     if (addresses != null && addresses.size() > 0) {
                         address = addresses.get(0);
                         cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                         addresses.clear();
                     }
                 } catch (IOException e) {
