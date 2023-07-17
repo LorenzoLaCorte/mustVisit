@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     private LatLng cord = null;
@@ -39,6 +41,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Double cordX;
     private Double cordY;
     List<Address> addresses= new ArrayList<>();
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +50,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     /**
@@ -78,6 +82,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         moveToCurrentLocation(cord);
 
         mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
     private void moveToCurrentLocation(LatLng currentLocation)
     {
@@ -142,7 +147,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
-        Button button = new Button(this);
+        button = new Button(this);
         button.setText("Add Stop");
 
         // Define layout parameters for the button
@@ -163,7 +168,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 SendToMaps.add(titleMarker);
                 Toast.makeText(getApplicationContext(),"Stop added to the Trip!",Toast.LENGTH_SHORT).show();
                 relativeLayout[0] = (RelativeLayout) button.getParent();
-                if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
+                if(relativeLayout[0] != null) //for safety only  as you are doing onClick
                     relativeLayout[0].removeView(button);
 
             }
@@ -191,5 +196,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         startActivity(browserIntent);
     }
 
+    @Override
+    public void onMapClick(@NonNull LatLng latLng) {
+        final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
+        relativeLayout[0] = (RelativeLayout) button.getParent();
+        if(relativeLayout[0] != null) //for safety only  as you are doing onClick
+            relativeLayout[0].removeView(button);
+
+    }
 }
 
