@@ -108,6 +108,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             cord = new LatLng(p.position.x, p.position.y);
             mMap.addMarker(new MarkerOptions().position(cord).title(p.name + "," + p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
+
         }
 
     }
