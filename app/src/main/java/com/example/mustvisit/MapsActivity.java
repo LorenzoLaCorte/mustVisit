@@ -42,6 +42,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Double cordY;
     List<Address> addresses= new ArrayList<>();
     private Button button;
+    private RelativeLayout.LayoutParams layoutParams;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,6 +81,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         cordY= userLocation.y;
         cord=new LatLng(cordX,cordY);
         moveToCurrentLocation(cord);
+        layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
 
         mMap.setOnMarkerClickListener(this);
         mMap.setOnMapClickListener(this);
@@ -147,14 +152,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
+
+        for (int i = 0; i < relativeLayout[0].getChildCount(); i++) {
+            View childView = relativeLayout[0].getChildAt(i);
+            if (childView instanceof Button) {
+                relativeLayout[0].removeView(childView);
+                break; // Remove only the first occurrence of a button
+            }
+        }
+
         button = new Button(this);
         button.setText("Add Stop");
 
         // Define layout parameters for the button
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-        );
 
         // Set the position of the button using layout rules
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -199,9 +209,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapClick(@NonNull LatLng latLng) {
         final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
-        relativeLayout[0] = (RelativeLayout) button.getParent();
-        if(relativeLayout[0] != null) //for safety only  as you are doing onClick
-            relativeLayout[0].removeView(button);
+        for (int i = 0; i < relativeLayout[0].getChildCount(); i++) {
+            View childView = relativeLayout[0].getChildAt(i);
+            if (childView instanceof Button) {
+                relativeLayout[0].removeView(childView);
+                break; // Remove only the first occurrence of a button
+            }
+        }
 
     }
 }
