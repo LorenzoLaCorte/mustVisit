@@ -105,90 +105,35 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void AddHistoricalPlaces(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
-            Geocoder geo = new Geocoder(this, Locale.getDefault());
-            Address address;
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name + "," + p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
-            if (p.name.length() != 0) {
-                try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
-
-                    if (addresses != null && addresses.size() > 0) {
-                        address = addresses.get(0);
-                        cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-                        addresses.clear();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
 
     public void AddFunAttractions(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
-            Geocoder geo = new Geocoder(this, Locale.getDefault());
-            Address address;
-            if (p.name.length() != 0) {
-                try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-                    if (addresses != null && addresses.size() > 0) {
-                        address = addresses.get(0);
-                        cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
-                        addresses.clear();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
         }
     }
     public void AddParks(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
-            Geocoder geo = new Geocoder(this, Locale.getDefault());
-            Address address;
-            if (p.name.length() != 0) {
-                try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
-                    if (addresses != null && addresses.size() > 0) {
-                        address = addresses.get(0);
-                        cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                        addresses.clear();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
         }
     }
 
     public void AddBeaches(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
-            Geocoder geo = new Geocoder(this, Locale.getDefault());
-            Address address;
-            if (p.name.length() != 0) {
-                try {
-                    List<Address> addresses = geo.getFromLocationName(p.name.toString()+","+p.city.toString(), 1);
+            cord = new LatLng(p.position.x, p.position.y);
+            mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
-                    if (addresses != null && addresses.size() > 0) {
-                        address = addresses.get(0);
-                        cord = new LatLng(address.getLatitude(), address.getLongitude());
-                        mMap.addMarker(new MarkerOptions().position(cord).title(p.name+","+p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                        addresses.clear();
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-
-            }
         }
     }
 
