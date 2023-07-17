@@ -109,6 +109,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             mMap.addMarker(new MarkerOptions().position(cord).title(p.name + "," + p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
         }
+
     }
 
     public void AddFunAttractions(TopPlaces Places) {
