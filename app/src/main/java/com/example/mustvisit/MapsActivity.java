@@ -175,11 +175,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onClick(View view) {
-                SendToMaps.add(titleMarker);
-                Toast.makeText(getApplicationContext(),"Stop added to the Trip!",Toast.LENGTH_SHORT).show();
-                relativeLayout[0] = (RelativeLayout) button.getParent();
-                if(relativeLayout[0] != null) //for safety only  as you are doing onClick
-                    relativeLayout[0].removeView(button);
+                if (SendToMaps.contains(titleMarker)){
+                    Toast.makeText(getApplicationContext(), "Stop already added to the Trip! Select a new One!", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    SendToMaps.add(titleMarker);
+                    Toast.makeText(getApplicationContext(), "Stop added to the Trip!", Toast.LENGTH_SHORT).show();
+                    relativeLayout[0] = (RelativeLayout) button.getParent();
+                    if (relativeLayout[0] != null) //for safety only  as you are doing onClick
+                        relativeLayout[0].removeView(button);
+                }
 
             }
         });
@@ -189,23 +195,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-    public void openGM(View view){
-        String valueToSendMap="";
-        String x=cordX.toString();
-        String y= cordY.toString();
-        for (String s: SendToMaps){
-            s=s.replace(" ","+");
-            Log.d(TAG, "Valore Send Maps: "+s);
-            valueToSendMap+="/"+s;
-            Log.d(TAG, "Value: "+valueToSendMap);
+    public void openGM(View view) {
+        if (SendToMaps.size() != 0) {
+            String valueToSendMap = "";
+            String x = cordX.toString();
+            String y = cordY.toString();
+            for (String s : SendToMaps) {
+                s = s.replace(" ", "+");
+                Log.d(TAG, "Valore Send Maps: " + s);
+                valueToSendMap += "/" + s;
+                Log.d(TAG, "Value: " + valueToSendMap);
 
+            }
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/" + x + "," + y + "" + valueToSendMap));
+            //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
+            SendToMaps.clear();
+            startActivity(browserIntent);
         }
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+x+","+y+""+valueToSendMap));
-                        //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
-        SendToMaps.clear();
-        startActivity(browserIntent);
+        else {
+            Toast.makeText(getApplicationContext(),"Impossible to generate an Itinerary , add Stop!",Toast.LENGTH_SHORT).show();
+        }
     }
-
     @Override
     public void onMapClick(@NonNull LatLng latLng) {
         final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
