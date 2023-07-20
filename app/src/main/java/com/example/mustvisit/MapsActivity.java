@@ -14,6 +14,8 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
 
     private GoogleMap mMap;
     private LatLng cord = null;
@@ -39,6 +41,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Double cordX;
     private Double cordY;
     List<Address> addresses= new ArrayList<>();
+    private Button button;
+    private RelativeLayout.LayoutParams layoutParams;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +51,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
     }
 
     /**
@@ -76,8 +81,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         cordY= userLocation.y;
         cord=new LatLng(cordX,cordY);
         moveToCurrentLocation(cord);
+        layoutParams = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT
+        );
 
         mMap.setOnMarkerClickListener(this);
+        mMap.setOnMapClickListener(this);
     }
     private void moveToCurrentLocation(LatLng currentLocation)
     {
@@ -94,11 +104,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         if (Places.category.toString().equals("HISTORICAL_PLACES")) {
             AddHistoricalPlaces(Places);
         } else if (Places.category.toString().equals("FUN_ATTRACTIONS")) {
-           AddFunAttractions(Places);
+            AddFunAttractions(Places);
         } else if (Places.category.toString().equals("PARKS")) {
-           AddParks(Places);
+            AddParks(Places);
         }else {
-           AddBeaches(Places);
+            AddBeaches(Places);
         }
 
     }
@@ -108,7 +118,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             cord = new LatLng(p.position.x, p.position.y);
             mMap.addMarker(new MarkerOptions().position(cord).title(p.name + "," + p.city).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
+
         }
+
     }
 
     public void AddFunAttractions(TopPlaces Places) {
@@ -140,14 +152,19 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public boolean onMarkerClick(Marker marker) {
         final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
-        Button button = new Button(this);
+
+        for (int i = 0; i < relativeLayout[0].getChildCount(); i++) {
+            View childView = relativeLayout[0].getChildAt(i);
+            if (childView instanceof Button) {
+                relativeLayout[0].removeView(childView);
+                break; // Remove only the first occurrence of a button
+            }
+        }
+
+        button = new Button(this);
         button.setText("Add Stop");
 
         // Define layout parameters for the button
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT,
-                RelativeLayout.LayoutParams.WRAP_CONTENT
-        );
 
         // Set the position of the button using layout rules
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
@@ -158,11 +175,17 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
             @Override
             public void onClick(View view) {
-                SendToMaps.add(titleMarker);
-                Toast.makeText(getApplicationContext(),"Stop added to the Trip!",Toast.LENGTH_SHORT).show();
-                relativeLayout[0] = (RelativeLayout) button.getParent();
-                if(null!= relativeLayout[0]) //for safety only  as you are doing onClick
-                    relativeLayout[0].removeView(button);
+                if (SendToMaps.contains(titleMarker)){
+                    Toast.makeText(getApplicationContext(), "Stop already added to the Trip! Select a new One!", Toast.LENGTH_SHORT).show();
+
+                }
+                else {
+                    SendToMaps.add(titleMarker);
+                    Toast.makeText(getApplicationContext(), "Stop added to the Trip!", Toast.LENGTH_SHORT).show();
+                    relativeLayout[0] = (RelativeLayout) button.getParent();
+                    if (relativeLayout[0] != null) //for safety only  as you are doing onClick
+                        relativeLayout[0].removeView(button);
+                }
 
             }
         });
@@ -172,22 +195,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
 
 
-    public void openGM(View view){
-        String valueToSendMap="";
-        String x=cordX.toString();
-        String y= cordY.toString();
-        for (String s: SendToMaps){
-            s=s.replace(" ","+");
-            Log.d(TAG, "Valore Send Maps: "+s);
-            valueToSendMap+="/"+s;
-            Log.d(TAG, "Value: "+valueToSendMap);
+    public void openGM(View view) {
+        if (SendToMaps.size() != 0) {
+            String valueToSendMap = "";
+            String x = cordX.toString();
+            String y = cordY.toString();
+            for (String s : SendToMaps) {
+                s = s.replace(" ", "+");
+                Log.d(TAG, "Valore Send Maps: " + s);
+                valueToSendMap += "/" + s;
+                Log.d(TAG, "Value: " + valueToSendMap);
 
+            }
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/" + x + "," + y + "" + valueToSendMap));
+            //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
+            SendToMaps.clear();
+            startActivity(browserIntent);
         }
-        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/"+x+","+y+""+valueToSendMap));
-                        //44.38073010887341,9.043476119134446/Spiaggia+Pubblica+di+Priaruggia,+Genoa,+Italy/Spiaggia+di+Boccadasse,+Genoa,+Italy/Acquario+di+Genova,+Genoa,+Italy"));
-        SendToMaps.clear();
-        startActivity(browserIntent);
+        else {
+            Toast.makeText(getApplicationContext(),"Impossible to generate an Itinerary , add Stop!",Toast.LENGTH_SHORT).show();
+        }
     }
+    @Override
+    public void onMapClick(@NonNull LatLng latLng) {
+        final RelativeLayout[] relativeLayout = {findViewById(R.id.layout)};
+        for (int i = 0; i < relativeLayout[0].getChildCount(); i++) {
+            View childView = relativeLayout[0].getChildAt(i);
+            if (childView instanceof Button) {
+                relativeLayout[0].removeView(childView);
+                break; // Remove only the first occurrence of a button
+            }
+        }
 
+    }
 }
 
