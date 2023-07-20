@@ -112,6 +112,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
 
     }
+
     public void AddHistoricalPlaces(TopPlaces Places) {
         for (Place p : Places.topPlaces) {
             Log.d(TAG, "Name: " + p.name +"City:" +p.city+ " coord: " + p.position.x + "," + p.position.y);
