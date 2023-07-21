@@ -46,10 +46,10 @@ public class Parser {
 
             String[] parts = line.split(" - ");
             String name = parts[0].trim();
-            Log.d(TAG, "name: " +parts[0].trim());
+            Log.d(TAG, "name: " + parts[0].trim());
 
-            String city=parts[1].trim();
-            Log.d(TAG, "City: " +parts[1].trim());
+            String city = parts[1].trim();
+            Log.d(TAG, "City: " + parts[1].trim());
 
             String positionStr = parts[2].trim();
             Log.d(TAG, "PositionSTR: " +parts[2].trim());

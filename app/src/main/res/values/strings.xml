@@ -6,9 +6,13 @@
     <string name="parks">Parks</string>
     <string name="select_categories_of_interest">Select Categories of Interest</string>
     <string name="LocationLoading">📍 Location is Loading…</string>
+    <string name="MapLoading">🗺 Map is Loading…</string>
     <string name="Search">🔎 Search</string>
+    <string name="Map">🗺 Open Map</string>
     <string name="select_a_range_kilometers">Select the Maximum Distance from your Position</string>
     <string name="loading">𝐍𝐨𝐰 𝐥𝐨𝐚𝐝𝐢𝐧𝐠...</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_activity_maps2">MapsActivity2</string>
+    <string name="go_to_google_maps">🌎 Show Itinerary</string>
+    <string name="add_stop">📌 Add Stop</string>
 </resources>

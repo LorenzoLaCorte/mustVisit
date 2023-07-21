@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     private Point userLocation;
     private List<Category> selectedCategories;
     private Button button;
-    List<Address> addresses= new ArrayList<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,10 +61,6 @@ public class MainActivity extends AppCompatActivity {
                 button.setText(R.string.Search);
             }
         });
-
-
-
-
     }
 
     private void getUserLocation(final LocationCallback locationCallback) {
