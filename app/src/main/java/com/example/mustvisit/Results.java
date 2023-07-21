@@ -1,12 +1,15 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +22,7 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     private Point userLocation;
     private List<Category> userCategories = new ArrayList<>();
     private Double range;
+    private Button button;
 
     // Structure that contains Category and List of Places
     private List<TopPlaces> topPlacesList = new ArrayList<>();
@@ -27,6 +31,10 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+
+        button = findViewById(R.id.buttonOpenMap);
+        button.setEnabled(false);
+        button.setText(R.string.MapLoading);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -45,20 +53,19 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     private void queryGPT(Category category) {
         String query = "Tell me the %s best %s near these coordinates (%s, %s) in the range of %s kilometers. " +
                 "I want as response a numbered list without further descriptions. " +
-                "I want all elements in the list to contain {name} - {coordinates (x,y)} - {short description}.";
+                "I want all elements in the list to contain {name} - {city} - {coordinates (x,y)} - {short description}.";
 
         query = String.format(query, numResults, category.name().toLowerCase().replaceAll("_", " "), userLocation.x, userLocation.y, range);
         Log.d("ChatGPT", "Query: " + query);
 
-        // TODO: insert threads here
         TopPlaces initTopPlaces = new TopPlaces(category, query);
 
         GptChatApiService.queryChatGPT(initTopPlaces, this);
-        // onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
-        //           "2. Bay of Silence - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
-        //           "3. Sestri Levante Beach - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
-        //           "4. Lavagna Beach - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
-        //           "5. Moneglia Beach - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
+        // onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - Genoa, Italy - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
+        //              "2. Bay of Silence - Genoa, Italy - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
+        //              "3. Sestri Levante Beach - Genoa, Italy - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
+        //              "4. Lavagna Beach - Genoa, Italy - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
+        //              "5. Moneglia Beach - Genoa, Italy - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
     }
 
     @Override
@@ -119,7 +126,6 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         linearLayout.removeAllViews(); // Clear the existing views
 
         for (TopPlaces topPlaces : topPlacesList) {
-
             // Add category as a TextView with custom formatting
             TextView categoryTextView = new TextView(this);
             LinearLayout.LayoutParams categoryLayoutParams = new LinearLayout.LayoutParams(
@@ -137,38 +143,52 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
             categorySeparatorView.setBackgroundColor(Color.GRAY);
             linearLayout.addView(categorySeparatorView);
 
-            if(topPlaces.topPlaces == null){
-                TextView placeNameTextView = new TextView(this);
-                LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                placeNameTextView.setLayoutParams(placeNameLayoutParams);
-                placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                placeNameTextView.setText("No Results Found.");
-                linearLayout.addView(placeNameTextView);
-                continue;
-            }
-            for (Place place : topPlaces.topPlaces) {
-                // Add the place name in bold
-                TextView placeNameTextView = new TextView(this);
-                LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                placeNameTextView.setLayoutParams(placeNameLayoutParams);
-                placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
-                placeNameTextView.setText(place.name);
-                linearLayout.addView(placeNameTextView);
-
-                // Add other place details
-                TextView placeDetailsTextView = new TextView(this);
-                LinearLayout.LayoutParams placeDetailsLayoutParams = new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
-                placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
-                placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
-                                + "ℹ️ " + place.description + "\n");
-                linearLayout.addView(placeDetailsTextView);
-            }
-
+            renderPlaces(linearLayout, topPlaces);
         }
+
+        // Enable the Button
+        button.setEnabled(true);
+        button.setText(R.string.Map);
     }
 
+    private void renderPlaces(LinearLayout linearLayout, TopPlaces topPlaces) {
+        if(topPlaces.topPlaces == null){
+            TextView placeNameTextView = new TextView(this);
+            LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            placeNameTextView.setLayoutParams(placeNameLayoutParams);
+            placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+            placeNameTextView.setText("No Results Found.");
+            linearLayout.addView(placeNameTextView);
+            return;
+        }
+        for (Place place : topPlaces.topPlaces) {
+            // Add the place name in bold
+            TextView placeNameTextView = new TextView(this);
+            LinearLayout.LayoutParams placeNameLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            placeNameTextView.setLayoutParams(placeNameLayoutParams);
+            placeNameTextView.setTextAppearance(this, android.R.style.TextAppearance_Medium);
+            placeNameTextView.setText(place.name);
+            linearLayout.addView(placeNameTextView);
+
+            // Add other place details
+            TextView placeDetailsTextView = new TextView(this);
+            LinearLayout.LayoutParams placeDetailsLayoutParams = new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            placeDetailsTextView.setLayoutParams(placeDetailsLayoutParams);
+            placeDetailsTextView.setTextAppearance(this, android.R.style.TextAppearance_Small);
+            placeDetailsTextView.setText("\uD83D\uDCCC " + String.format("%.02f", place.distance) + " km\n"
+                            + "ℹ️ " + place.description+"\n");
+            linearLayout.addView(placeDetailsTextView);
+        }
+
+    }
+
+    public void openMap(View view) {
+        Intent myIntent = new Intent(Results.this, MapsActivity.class);
+        Utility.getInstance().setList((ArrayList) topPlacesList);
+        myIntent.putExtra("userLocation", userLocation);
+        startActivity(myIntent);
+    }
 }
