@@ -76,8 +76,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         for (TopPlaces places: topPlaces){
             try {
-                // TODO: threading (a thread for every call to this function)
-                AddPlaces(places);
+                AddPlacesTask addPlacesTask = new AddPlacesTask(mMap, geocoder);
+                addPlacesTask.execute(places);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -101,49 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Zoom out to zoom level 10, animating with a duration of 2 seconds.
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
     }
-    private float ChooseMarkerColor(Category category) throws Exception {
-        if (category.toString().equals("HISTORICAL_PLACES")) {
-            return BitmapDescriptorFactory.HUE_BLUE;
-        }
-        else if (category.toString().equals("FUN_ATTRACTIONS")) {
-            return BitmapDescriptorFactory.HUE_RED;
-        }
-        else if (category.toString().equals("PARKS")) {
-            return BitmapDescriptorFactory.HUE_GREEN;
-        }
-        else if (category.toString().equals("BEACHES")) {
-            return BitmapDescriptorFactory.HUE_ORANGE;
-        }
-        else throw new Exception("Non-existent category");
-    }
-    public void AddPlaces(TopPlaces places) throws Exception {
-        Log.d(TAG, "Category: " + places.category);
-        float markerColor = ChooseMarkerColor(places.category);
 
-        for (Place place : places.topPlaces) {
-            Log.d(TAG, "Place Stats --> Name: " + place.name + ", City: " + place.city + ", Coordinates: " + place.position.x + "," + place.position.y);
-            Address address;
-            if (place.name.length() != 0) {
-                try {
-                    List<Address> addresses = geocoder.getFromLocationName(place.name.toString() + "," + place.city.toString(), 1);
-                    LatLng placeCord;
-                    if (addresses != null && addresses.size() > 0) {
-                        Log.d(TAG, "Using Geocoder for " + place.name);
-                        // TODO: maybe instead of taking 0, take the nearest to userLocation
-                        address = addresses.get(0);
-                        placeCord = new LatLng(address.getLatitude(), address.getLongitude());
-                    }
-                    else {
-                        Log.d(TAG, "Using Standard Position for " + place.name);
-                        placeCord = new LatLng(place.position.x, place.position.y);
-                    }
-                    mMap.addMarker(new MarkerOptions().position(placeCord).title(place.name + "," + place.city).icon(BitmapDescriptorFactory.defaultMarker(markerColor)));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-    }
     public Button createAddStopBtn() {
         // Create and Set Properties
         Button newBtn = new Button(this);
