@@ -8,6 +8,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -108,7 +111,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         newBtn.setId(View.generateViewId());
         newBtn.setText(R.string.add_stop);
         newBtn.setTextColor(Color.WHITE);
-        newBtn.setBackgroundResource(R.drawable.button_shape);
+        newBtn.setBackgroundResource(R.drawable.button_shape_small);
         newBtn.setLayoutParams(layoutParams);
         constraintLayout.addView(newBtn);
 

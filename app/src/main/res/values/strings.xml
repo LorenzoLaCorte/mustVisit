@@ -15,4 +15,5 @@
     <string name="title_activity_maps2">MapsActivity2</string>
     <string name="go_to_google_maps">🌎 Show Itinerary</string>
     <string name="add_stop">📌 Add Stop</string>
+    <string name="legend_text">Historical Places 🔵\nFun Attractions 🔴\nParks 🟢\nBeaches 🟠</string>
 </resources>
