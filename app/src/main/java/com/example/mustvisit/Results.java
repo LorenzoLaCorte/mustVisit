@@ -11,6 +11,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
 
     // Structure that contains Category and List of Places
     private List<TopPlaces> topPlacesList = new ArrayList<>();
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +37,9 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         button = findViewById(R.id.buttonOpenMap);
         button.setEnabled(false);
         button.setText(R.string.MapLoading);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setMax(100);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
@@ -73,6 +78,11 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         Log.d("ChatGPT", "Response: " + topPlaces.response);
         parseQueryResult(topPlaces);
         topPlacesList.add(topPlaces);
+
+        double progress = (double) topPlacesList.size() / userCategories.size() * 100;
+        Log.d(TAG, "Progress: " + progress);
+
+        progressBar.setProgress((int) progress);
 
         if(topPlacesList.size() == userCategories.size()){
             renderUI();

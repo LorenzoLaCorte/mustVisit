@@ -26,13 +26,13 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
 
     private float ChooseMarkerColor(Category category) throws Exception {
         if (category.toString().equals("HISTORICAL_PLACES")) {
-            return BitmapDescriptorFactory.HUE_BLUE;
+            return BitmapDescriptorFactory.HUE_AZURE;
         }
         else if (category.toString().equals("FUN_ATTRACTIONS")) {
             return BitmapDescriptorFactory.HUE_RED;
         }
         else if (category.toString().equals("PARKS")) {
-            return BitmapDescriptorFactory.HUE_GREEN;
+            return BitmapDescriptorFactory.HUE_YELLOW;
         }
         else if (category.toString().equals("BEACHES")) {
             return BitmapDescriptorFactory.HUE_ORANGE;

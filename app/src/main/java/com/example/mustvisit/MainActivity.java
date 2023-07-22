@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Toast;
+
 import com.google.android.material.slider.RangeSlider;
 
 import java.io.IOException;
@@ -95,6 +97,11 @@ public class MainActivity extends AppCompatActivity {
                 Category category = Category.valueOf(categoryText.toUpperCase());
                 selectedCategories.add(category);
             }
+        }
+
+        if(selectedCategories.size() == 0){
+            Toast.makeText(getApplicationContext(), "Select at least one category.", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         Intent intent = new Intent(MainActivity.this, Results.class);
