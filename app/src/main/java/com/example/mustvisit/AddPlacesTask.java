@@ -8,8 +8,10 @@ import android.util.Log;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
@@ -18,10 +20,16 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
     private GoogleMap mMap;
     private Geocoder geocoder;
     private TopPlaces places;
+    protected HashMap<MarkerOptions, Place> markerToPlace;
 
     public AddPlacesTask(GoogleMap mMap, Geocoder geocoder) {
         this.mMap = mMap;
         this.geocoder = geocoder;
+        markerToPlace = new HashMap<MarkerOptions, Place>();
+    }
+
+    public HashMap<MarkerOptions, Place> getMarkerToPlace(){
+        return this.markerToPlace;
     }
 
     private float ChooseMarkerColor(Category category) throws Exception {
@@ -72,7 +80,8 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
                         placeCord = new LatLng(place.position.x, place.position.y);
                     }
                     // Store the marker details in a data structure or list (we'll handle it in onPostExecute)
-                    place.setMarkerOptions(placeCord, markerColor);
+                    place.setCord(placeCord);
+                    place.setMarkerOptions(markerColor);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -87,6 +96,7 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
         for (Place place : places.topPlaces) {
             if (place.getMarkerOptions() != null) {
                 mMap.addMarker(place.getMarkerOptions());
+                markerToPlace.put(place.getMarkerOptions(), place);
             }
         }
     }

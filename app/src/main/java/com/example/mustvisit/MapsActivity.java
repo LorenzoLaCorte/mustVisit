@@ -4,7 +4,6 @@ import static android.content.ContentValues.TAG;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,19 +23,16 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, GoogleMap.OnMapClickListener {
     private GoogleMap mMap;
-    private ArrayList<String> SendToMaps = new ArrayList<String>(); // Create an ArrayList object
+    private ArrayList<Marker> SendToMaps = new ArrayList<Marker>();
     private Point userLocation;
     private LatLng userLocationMaps = null;
     private RelativeLayout.LayoutParams layoutParams;
@@ -131,15 +127,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         constraintLayout.removeView(lastAddedBtn);
 
         lastAddedBtn = createAddStopBtn();
-        String titleMarker = marker.getTitle();
         lastAddedBtn.setOnClickListener(new TextView.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (SendToMaps.contains(titleMarker)){
+                if (SendToMaps.contains(marker)){
                     Toast.makeText(getApplicationContext(), "Stop already added to the Trip! Select a new One!", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    SendToMaps.add(titleMarker);
+                    SendToMaps.add(marker);
                     Toast.makeText(getApplicationContext(), "Stop added to the Trip!", Toast.LENGTH_SHORT).show();
                     constraintLayout.removeView(lastAddedBtn);
                 }
@@ -148,15 +143,42 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
+    private ArrayList<Marker> DefineShortestPath(Point userLocation, ArrayList<Marker> markers){
+        ArrayList<Marker> shortestPath = new ArrayList<>();
+        Graph graph = new Graph();
+
+        Node root = new Node("userLocation", userLocation);
+        graph.addNode(root);
+
+        for(Marker marker : markers) {
+            Point newNodePosition = new Point(marker.getPosition().latitude, marker.getPosition().longitude);
+            Node newNode = new Node(marker.getTitle(), newNodePosition);
+            graph.addNode(newNode);
+        }
+
+        for(Node source : graph.getNodes()) {
+            root.addDestination(source, root.getPosition().computeDistance(source.getPosition()));
+            for(Node dest : graph.getNodes()) {
+                source.addDestination(dest, source.getPosition().computeDistance(dest.getPosition()));
+            }
+        }
+
+        Graph shortestPathGraph = graph.calculateShortestPathFromSource(root);
+
+        return markers;
+    }
+
      /**
      * ULR must be of the type:
      * ../x,y/First+Place/Second+Place/...
      */
-    public void openGM(View view) {
+    public void GoToItinerary(View view) {
         if (SendToMaps.size() != 0) {
+            // Reorganize Markers in order to get shortest path
+            SendToMaps = DefineShortestPath(userLocation, SendToMaps);
             StringBuilder valueToSendMap = new StringBuilder();
-            for (String s : SendToMaps) {
-                valueToSendMap.append("/").append(s.replace(" ", "+"));
+            for (Marker marker : SendToMaps) {
+                valueToSendMap.append("/").append(marker.getTitle().replace(" ", "+"));
             }
             Uri url = Uri.parse("https://www.google.com/maps/dir/"
                                     + Double.valueOf(userLocation.x).toString() + "," + Double.valueOf(userLocation.y).toString()

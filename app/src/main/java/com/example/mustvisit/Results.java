@@ -60,12 +60,12 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
 
         TopPlaces initTopPlaces = new TopPlaces(category, query);
 
-        GptChatApiService.queryChatGPT(initTopPlaces, this);
-        // onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - Genoa, Italy - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
-        //              "2. Bay of Silence - Genoa, Italy - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
-        //              "3. Sestri Levante Beach - Genoa, Italy - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
-        //              "4. Lavagna Beach - Genoa, Italy - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
-        //              "5. Moneglia Beach - Genoa, Italy - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
+        // GptChatApiService.queryChatGPT(initTopPlaces, this);
+        onResponseReceived(new TopPlaces(Category.BEACHES, query, "1. Paraggi Beach - Genoa, Italy - 44.319652, 9.195813 - Small, exclusive cove with turquoise waters and rocky cliffs. \n" +
+                     "2. Bay of Silence - Genoa, Italy - 44.305145, 9.342084 - Wide, sandy beach with calm waters and a relaxing atmosphere. \n" +
+                     "3. Sestri Levante Beach - Genoa, Italy - 44.271786, 9.399056 - Popular seaside resort with two sandy beaches and lots of amenities. \n" +
+                     "4. Lavagna Beach - Genoa, Italy - 44.320249, 9.322719 - Long, pebbly beach with crystal-clear waters and a laid-back vibe. \n" +
+                     "5. Moneglia Beach - Genoa, Italy - 44.246954, 9.512802 - Picturesque beach with fine sand and clear, shallow waters, great for families.\n"));
     }
 
     @Override
@@ -184,7 +184,6 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         }
 
     }
-
     public void openMap(View view) {
         Intent myIntent = new Intent(Results.this, MapsActivity.class);
         Utility.getInstance().setList((ArrayList) topPlacesList);
