@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Results extends AppCompatActivity implements GptChatApiService.ChatGPTResponseListener {
-    // TODO: optimize the application: use multithreading for each query to GPT
     private final int numResults = 5;     // number of results to return for each query
     private Point userLocation;
     private List<Category> userCategories = new ArrayList<>();
@@ -91,8 +90,6 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
 
     private void retryQuery(TopPlaces topPlaces){
         if(topPlaces.tryIncrementingRetries()){
-            // TODO: insert threads here
-            // TODO: if Rate limit reached, stop and render the UI
             Log.d("ChatGPT", "Retrying query, try number " +  topPlaces.retries);
             GptChatApiService.queryChatGPT(topPlaces, this);
         }

@@ -64,7 +64,7 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
                     LatLng placeCord;
                     if (addresses != null && addresses.size() > 0) {
                         Log.d(TAG, "Using Geocoder for " + place.name);
-                        // TODO: maybe instead of taking 0, take the nearest to userLocation
+                        // for the future : maybe instead of taking 0, take the nearest to userLocation
                         address = addresses.get(0);
                         placeCord = new LatLng(address.getLatitude(), address.getLongitude());
                     } else {

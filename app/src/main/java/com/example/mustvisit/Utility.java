@@ -1,6 +1,5 @@
 package com.example.mustvisit;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Utility {
