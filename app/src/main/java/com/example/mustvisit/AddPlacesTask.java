@@ -11,6 +11,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
 
@@ -42,11 +43,12 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
 
     @Override
     protected Void doInBackground(TopPlaces... topPlacesArray) {
-        if (topPlacesArray.length == 0) {
+        places = topPlacesArray[0];
+
+        if (Objects.isNull(places.topPlaces)) {
             return null;
         }
 
-        places = topPlacesArray[0];
         Log.d(TAG, "Category: " + places.category);
         float markerColor;
         try {
@@ -84,6 +86,9 @@ public class AddPlacesTask extends AsyncTask<TopPlaces, Void, Void> {
     @Override
     protected void onPostExecute(Void aVoid) {
         // Now, run on the main thread and add the markers to the map.
+        if (Objects.isNull(places.topPlaces)) {
+            return;
+        }
         for (Place place : places.topPlaces) {
             if (place.getMarkerOptions() != null) {
                 mMap.addMarker(place.getMarkerOptions());

@@ -1,5 +1,9 @@
 package com.example.mustvisit;
 
+import static android.content.ContentValues.TAG;
+
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +24,13 @@ public class TopPlaces {
         this.response = response;
     }
 
+    public TopPlaces(Category category, String query, String response, int retries) {
+        this.category = category;
+        this.query = query;
+        this.response = response;
+        this.retries = retries;
+    }
+
     public void setTopPlaces(List<Place> topPlaces) {
         this.topPlaces = topPlaces;
     }
@@ -27,6 +38,6 @@ public class TopPlaces {
     public Boolean tryIncrementingRetries(){
         this.retries += 1;
         this.topPlaces.clear();
-        return (this.retries < 3);
+        return (this.retries < 2);
     }
 }

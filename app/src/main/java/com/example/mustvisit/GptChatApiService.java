@@ -19,6 +19,8 @@ public class GptChatApiService {
             @Override
             protected TopPlaces doInBackground(String... input) {
                 String query = input[0];
+                int retries = Integer.parseInt(input[1]);
+
                 Category category = topPlaces.category;
 
                 // Create an instance of OpenAiService
@@ -38,10 +40,10 @@ public class GptChatApiService {
                     // Get the response from the completion
                     String response = completionResult.getChoices().get(0).getMessage().getContent().trim();
 
-                    return new TopPlaces(category, query, response);
+                    return new TopPlaces(category, query, response, retries);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    return new TopPlaces(category, query, null);
+                    return new TopPlaces(category, query, null, retries);
                 }
             }
 
@@ -56,7 +58,7 @@ public class GptChatApiService {
                     }
                 }
             }
-        }.execute(topPlaces.query);
+        }.execute(topPlaces.query, topPlaces.retries+"");
     }
 
     public interface ChatGPTResponseListener {

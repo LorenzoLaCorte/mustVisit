@@ -82,7 +82,6 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
 
             double progress = (double) topPlacesList.size() / userCategories.size() * 100;
             Log.d(TAG, "Progress: " + progress);
-
             progressBar.setProgress((int) progress);
 
             if(topPlacesList.size() == userCategories.size()){
@@ -92,13 +91,20 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     }
 
     private void retryQuery(TopPlaces topPlaces){
-        if(topPlaces.tryIncrementingRetries()){
+        boolean retrySuccess = topPlaces.tryIncrementingRetries();
+        if(retrySuccess){
             Log.d("ChatGPT", "Retrying query, try number " +  topPlaces.retries);
             GptChatApiService.queryChatGPT(topPlaces, this);
         }
         else {
             Log.d("ChatGPT", "Limit of Retries Reached");
             topPlaces.setTopPlaces(null);
+            topPlacesList.add(topPlaces);
+
+            double progress = (double) topPlacesList.size() / userCategories.size() * 100;
+            Log.d(TAG, "Progress: " + progress);
+            progressBar.setProgress((int) progress);
+
             if(topPlacesList.size() == userCategories.size()){
                 renderUI();
             }
