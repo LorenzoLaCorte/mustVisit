@@ -75,16 +75,19 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
     @Override
     public void onResponseReceived(TopPlaces topPlaces) {
         Log.d("ChatGPT", "Response: " + topPlaces.response);
-        parseQueryResult(topPlaces);
-        topPlacesList.add(topPlaces);
+        boolean filterSuccess = parseQueryResult(topPlaces);
 
-        double progress = (double) topPlacesList.size() / userCategories.size() * 100;
-        Log.d(TAG, "Progress: " + progress);
+        if (filterSuccess){
+            topPlacesList.add(topPlaces);
 
-        progressBar.setProgress((int) progress);
+            double progress = (double) topPlacesList.size() / userCategories.size() * 100;
+            Log.d(TAG, "Progress: " + progress);
 
-        if(topPlacesList.size() == userCategories.size()){
-            renderUI();
+            progressBar.setProgress((int) progress);
+
+            if(topPlacesList.size() == userCategories.size()){
+                renderUI();
+            }
         }
     }
 
@@ -115,16 +118,18 @@ public class Results extends AppCompatActivity implements GptChatApiService.Chat
         }
         return filteredPlaces;
     }
-    private void parseQueryResult(TopPlaces topPlaces) {
+    private boolean parseQueryResult(TopPlaces topPlaces) {
         Parser parser = new Parser();
         List<Place> rawPlaces = parser.parseResult(topPlaces.response, topPlaces.category, userLocation);
         List<Place> places = filterResult(rawPlaces);
         if(places.size() == 0){
             Log.d("ChatGPT", "No Results, retrying..");
             retryQuery(topPlaces);
+            return false;
         }
         else {
             topPlaces.setTopPlaces(places);
+            return true;
         }
     }
 

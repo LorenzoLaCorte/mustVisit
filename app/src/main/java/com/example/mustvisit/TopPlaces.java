@@ -26,6 +26,7 @@ public class TopPlaces {
 
     public Boolean tryIncrementingRetries(){
         this.retries += 1;
+        this.topPlaces.clear();
         return (this.retries < 3);
     }
 }
