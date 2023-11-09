@@ -11,7 +11,7 @@ import java.util.Collections;
 
 public class GptChatApiService {
     private static final String MODEL_NAME = "gpt-3.5-turbo";
-    private static final String API_KEY = "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";
+    private static final String API_KEY = "YOUR_API_KEY";
 
     public static void queryChatGPT(TopPlaces topPlaces, final ChatGPTResponseListener listener) {
         new AsyncTask<String, Void, TopPlaces>() {
